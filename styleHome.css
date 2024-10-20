@@ -60,7 +60,16 @@ change the button color to organge, round??
   cursor: pointer;
   border-radius: 5px;
 }
-
+#download-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #f37c44;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
 #uploadButton:disabled {
   background-color: #ccc;
   cursor: not-allowed;

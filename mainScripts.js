@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInfo = document.getElementById('file-info'); // File information display area
     const fileNameDisplay = document.getElementById('file-name'); // Displays the name of the uploaded file
     const fileStatusDisplay = document.getElementById('file-status'); // Displays the status of the uploaded file
+    const downloadButton = document.getElementById('download-btn'); // Download button
     let file; // Variable to hold the file data
 
     // Event listener for dragging the file over the drop area
@@ -52,8 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listener for when the upload button is clicked
     uploadButton.addEventListener('click', async () => {
-        const formData = new FormData(); // Create a FormData object to send the file as form data
-        formData.append('file', file); // Append the file to the form data
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const arrayBuffer = event.target.result;
+            const bytes = new Uint8Array(arrayBuffer);
+            const byteArray = Array.from(bytes);
 
         // BACKEND INSTRUCTIONS:
         // This fetch call sends the PDF file to the backend (in this case, AWS) for processing.
@@ -66,7 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('YOUR_API_GATEWAY_ENDPOINT', {
                 method: 'POST',
-                body: formData // Send the form data (including the file) to the backend
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ file: byteArray }) // Send the byte array to the backend
             });
 
             const result = await response.json(); // Parse the backend's response
@@ -77,6 +84,134 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error uploading or processing the file:', error); // Log any errors in the console
             fileStatusDisplay.textContent = 'Error processing the file. Please try again.'; // Display an error message to the user
         }
+    }
+    reader.readAsArrayBuffer(file); // Read the file as an array buffer
+    });
+
+    // JSON data to be converted to CSV
+    const jsonData = [
+        {
+            "Subject": "PA0 due",
+            "Start Date": "Sep 6, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 1",
+            "Start Date": "Sep 13, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA1 assigned",
+            "Start Date": "Sep 16, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA1 due",
+            "Start Date": "Sep 30, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA2 assigned",
+            "Start Date": "Sep 30, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 2",
+            "Start Date": "Sep 27, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA2 due",
+            "Start Date": "Oct 28, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA3 assigned",
+            "Start Date": "Oct 28, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 3",
+            "Start Date": "Oct 18, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA2 due",
+            "Start Date": "Oct 28, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA3 due",
+            "Start Date": "Nov 1, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 4",
+            "Start Date": "Nov 8, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA3 due",
+            "Start Date": "Nov 1, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA4 assigned",
+            "Start Date": "Nov 8, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 5",
+            "Start Date": "Nov 15, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA4 due",
+            "Start Date": "Nov 29, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "Quiz 6",
+            "Start Date": "Dec 6, 2024",
+            "All Day Event": "TRUE"
+        },
+        {
+            "Subject": "PA5 due",
+            "Start Date": "Dec 18, 2024",
+            "All Day Event": "TRUE"
+        }
+    ];
+    // Function to convert JSON to CSV
+    function jsonToCsv(jsonData) {
+        const csvRows = [];
+        const headers = Object.keys(jsonData[0]);
+        csvRows.push(headers.join(','));
+
+        for (const row of jsonData) {
+            const values = headers.map(header => {
+                const escaped = ('' + row[header]).replace(/"/g, '\\"');
+                return `"${escaped}"`;
+            });
+            csvRows.push(values.join(','));
+        }
+
+        return csvRows.join('\n');
+    }
+    // Function to create a downloadable CSV file
+    function downloadCsv(csvData, filename) {
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    // Event listener for when the download button is clicked
+    downloadButton.addEventListener('click', () => {
+        const csvData = jsonToCsv(jsonData);
+        downloadCsv(csvData, 'events.csv');
     });
 });
-
