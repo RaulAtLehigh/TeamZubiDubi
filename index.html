@@ -73,19 +73,7 @@
         }
       });
 
-      uploadButton.addEventListener('click', async () => {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        // Send file to the backend (API Gateway endpoint)
-        const response = await fetch('YOUR_API_GATEWAY_ENDPOINT', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.json();
-        document.getElementById('result').innerText = result.calendarLink;
-      });
+    
     </script>
     <!-- <p>test</p> -->
     <!-- <div class="url-box">

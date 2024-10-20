@@ -94,8 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json(); // Parse the backend's response
 
-            // Display the resulting scraped information on the frontend (e.g., Google Calendar link)
-            document.getElementById('result').innerText = result.calendarLink;
+            if (result.status === 'ok') {
+                csvData = result.info; // Store the CSV data
+                fileStatusDisplay.textContent = 'File processed successfully. You can now download the CSV.'; // Success message
+            } else {
+                fileStatusDisplay.textContent = 'Error processing the file. Please try again.'; // Error message
+            }
         } catch (error) {
             console.error('Error uploading or processing the file:', error); // Log any errors in the console
             fileStatusDisplay.textContent = 'Error processing the file. Please try again.'; // Display an error message to the user
@@ -115,23 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Event listener for when the download button is clicked
     downloadButton.addEventListener('click', () => {
-        // Assuming the result contains the CSV lines as a string
-        const csvLines = `Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private
-        Final exam,12/10/2024,12:00 AM,12/18/2024,11:59 PM,True,"Final exam period",Lehigh University,False
-        CSE303: Operating Systems Design,08/26/2024,1:35 PM,08/26/2024,2:50 PM,False,"CSE303: Operating Systems Design",NV001,False
-        PA0,08/26/2024,12:00 AM,09/06/2024,11:59 PM,True,Programming Assignment 0,Lehigh University,False
-        PA1,09/16/2024,12:00 AM,10/04/2024,11:59 PM,True,Programming Assignment 1,Lehigh University,False
-        PA2,09/30/2024,12:00 AM,10/11/2024,11:59 PM,True,Programming Assignment 2,Lehigh University,False
-        PA3,10/28/2024,12:00 AM,11/08/2024,11:59 PM,True,Programming Assignment 3,Lehigh University,False
-        PA4,11/11/2024,12:00 AM,11/22/2024,11:59 PM,True,Programming Assignment 4,Lehigh University,False
-        PA5,12/02/2024,12:00 AM,12/10/2024,11:59 PM,True,Programming Assignment 5,Lehigh University,False
-        Quiz 1,09/11/2024,1:35 PM,09/11/2024,2:50 PM,False,In person Quiz 1,NV001,False
-        Quiz 2,09/25/2024,1:35 PM,09/25/2024,2:50 PM,False,In person Quiz 2,NV001,False
-        Quiz 3,10/16/2024,1:35 PM,10/16/2024,2:50 PM,False,In person Quiz 3,NV001,False
-        Quiz 4,11/06/2024,1:35 PM,11/06/2024,2:50 PM,False,In person Quiz 4,NV001,False
-        Quiz 5,11/13/2024,1:35 PM,11/13/2024,2:50 PM,False,In person Quiz 5,NV001,False
-        Quiz 6,12/04/2024,1:35 PM,12/04/2024,2:50 PM,False,In person Quiz 6,NV001,False`;
-
-        downloadCsv(csvLines, 'events.csv');
+        if (csvData) {
+            downloadCsv(csvData, 'events.csv');
+        } else {
+            fileStatusDisplay.textContent = 'No CSV data available. Please upload and process a file first.'; // Error message if no CSV data
+        }
     });
 });
