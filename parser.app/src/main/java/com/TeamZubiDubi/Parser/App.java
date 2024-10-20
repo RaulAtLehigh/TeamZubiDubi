@@ -12,14 +12,14 @@ public class App {
     public static void main(String[] args) {
         BedrockRuntimeClient client = BedrockRuntimeClient.builder()
                 .credentialsProvider(DefaultCredentialsProvider.create())
-                .region(Region.US_EAST_1)
+                .region(Region.US_WEST_2)
                 .build();
 
         String modelId = "anthropic.claude-3-haiku-20240307-v1:0";
 
         String inputText = "Explain 'rubber duck debugging' in one line.";
 
-        Message message = Message.builder() //Building message to send to model
+        Message message = Message.builder()
                 .content(ContentBlock.fromText(inputText))
                 .role(ConversationRole.USER)
                 .build();
