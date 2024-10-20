@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fileName: file.name,
                     fileBytes: byteArrayForJson
                 };
-
+                console.log('Payload being sent to backend:', jsonPayload);
                 // Now, submit this JSON object via fetch or AJAX
                 sendJsonPayload(jsonPayload);
             };
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
      // Example function to send JSON payload
     async function sendJsonPayload(payload) {
         try {
-            const response = await fetch('YOUR_API_GATEWAY_ENDPOINT', {
+            const response = await fetch('http://localhost:4567/upload', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
