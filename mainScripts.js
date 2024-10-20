@@ -53,27 +53,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listener for when the upload button is clicked
     uploadButton.addEventListener('click', async () => {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const arrayBuffer = event.target.result;
-            const bytes = new Uint8Array(arrayBuffer);
-            const byteArray = Array.from(bytes);
+        if (file) {
+            const reader = new FileReader();
 
-        // BACKEND INSTRUCTIONS:
-        // This fetch call sends the PDF file to the backend (in this case, AWS) for processing.
-        // The backend can use the file to:
-        // 1. Upload the file to an S3 bucket (using AWS SDK or pre-signed URLs).
-        // 2. Trigger an AWS Lambda function to process the PDF.
-        // 3. Use Amazon Textract or other services to extract text or structured data from the PDF.
-        // 4. Return the scraped information (e.g., dates, assignment names) as a response.
+            reader.onload = async (event) => {
+                const arrayBuffer = event.target.result;
 
+                // Convert ArrayBuffer to Uint8Array (byte array)
+                const byteArray = new Uint8Array(arrayBuffer);
+
+                // Convert byte array to a JSON-compatible array (Array of numbers)
+                const byteArrayForJson = Array.from(byteArray);
+
+                // Prepare your JSON object
+                const jsonPayload = {
+                    fileName: file.name,
+                    fileBytes: byteArrayForJson
+                };
+
+                // Now, submit this JSON object via fetch or AJAX
+                sendJsonPayload(jsonPayload);
+            };
+
+            reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+        } else {
+            console.log("No file selected");
+        }
+    });
+    
+     // Example function to send JSON payload
+    async function sendJsonPayload(payload) {
         try {
             const response = await fetch('YOUR_API_GATEWAY_ENDPOINT', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ file: byteArray }) // Send the byte array to the backend
+                body: JSON.stringify(payload)
             });
 
             const result = await response.json(); // Parse the backend's response
@@ -84,118 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error uploading or processing the file:', error); // Log any errors in the console
             fileStatusDisplay.textContent = 'Error processing the file. Please try again.'; // Display an error message to the user
         }
-    }
-    reader.readAsArrayBuffer(file); // Read the file as an array buffer
-    });
-
-    // JSON data to be converted to CSV
-    const jsonData = [
-        {
-            "Subject": "PA0 due",
-            "Start Date": "Sep 6, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 1",
-            "Start Date": "Sep 13, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA1 assigned",
-            "Start Date": "Sep 16, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA1 due",
-            "Start Date": "Sep 30, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA2 assigned",
-            "Start Date": "Sep 30, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 2",
-            "Start Date": "Sep 27, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA2 due",
-            "Start Date": "Oct 28, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA3 assigned",
-            "Start Date": "Oct 28, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 3",
-            "Start Date": "Oct 18, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA2 due",
-            "Start Date": "Oct 28, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA3 due",
-            "Start Date": "Nov 1, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 4",
-            "Start Date": "Nov 8, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA3 due",
-            "Start Date": "Nov 1, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA4 assigned",
-            "Start Date": "Nov 8, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 5",
-            "Start Date": "Nov 15, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA4 due",
-            "Start Date": "Nov 29, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "Quiz 6",
-            "Start Date": "Dec 6, 2024",
-            "All Day Event": "TRUE"
-        },
-        {
-            "Subject": "PA5 due",
-            "Start Date": "Dec 18, 2024",
-            "All Day Event": "TRUE"
-        }
-    ];
-    // Function to convert JSON to CSV
-    function jsonToCsv(jsonData) {
-        const csvRows = [];
-        const headers = Object.keys(jsonData[0]);
-        csvRows.push(headers.join(','));
-
-        for (const row of jsonData) {
-            const values = headers.map(header => {
-                const escaped = ('' + row[header]).replace(/"/g, '\\"');
-                return `"${escaped}"`;
-            });
-            csvRows.push(values.join(','));
-        }
-
-        return csvRows.join('\n');
     }
     // Function to create a downloadable CSV file
     function downloadCsv(csvData, filename) {
@@ -211,7 +115,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Event listener for when the download button is clicked
     downloadButton.addEventListener('click', () => {
-        const csvData = jsonToCsv(jsonData);
-        downloadCsv(csvData, 'events.csv');
+        // Assuming the result contains the CSV lines as a string
+        const csvLines = `Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private
+        Final exam,12/10/2024,12:00 AM,12/18/2024,11:59 PM,True,"Final exam period",Lehigh University,False
+        CSE303: Operating Systems Design,08/26/2024,1:35 PM,08/26/2024,2:50 PM,False,"CSE303: Operating Systems Design",NV001,False
+        PA0,08/26/2024,12:00 AM,09/06/2024,11:59 PM,True,Programming Assignment 0,Lehigh University,False
+        PA1,09/16/2024,12:00 AM,10/04/2024,11:59 PM,True,Programming Assignment 1,Lehigh University,False
+        PA2,09/30/2024,12:00 AM,10/11/2024,11:59 PM,True,Programming Assignment 2,Lehigh University,False
+        PA3,10/28/2024,12:00 AM,11/08/2024,11:59 PM,True,Programming Assignment 3,Lehigh University,False
+        PA4,11/11/2024,12:00 AM,11/22/2024,11:59 PM,True,Programming Assignment 4,Lehigh University,False
+        PA5,12/02/2024,12:00 AM,12/10/2024,11:59 PM,True,Programming Assignment 5,Lehigh University,False
+        Quiz 1,09/11/2024,1:35 PM,09/11/2024,2:50 PM,False,In person Quiz 1,NV001,False
+        Quiz 2,09/25/2024,1:35 PM,09/25/2024,2:50 PM,False,In person Quiz 2,NV001,False
+        Quiz 3,10/16/2024,1:35 PM,10/16/2024,2:50 PM,False,In person Quiz 3,NV001,False
+        Quiz 4,11/06/2024,1:35 PM,11/06/2024,2:50 PM,False,In person Quiz 4,NV001,False
+        Quiz 5,11/13/2024,1:35 PM,11/13/2024,2:50 PM,False,In person Quiz 5,NV001,False
+        Quiz 6,12/04/2024,1:35 PM,12/04/2024,2:50 PM,False,In person Quiz 6,NV001,False`;
+
+        downloadCsv(csvLines, 'events.csv');
     });
 });
