@@ -1,0 +1,145 @@
+<html class="scroll" lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Welcome to inTune</title>
+  <link rel="stylesheet" href="styleHome.css" />
+  <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <script src="mainScripts.js"></script>
+</head>
+
+<body>
+  <nav>
+    <ul class="menu">
+      <li class="logo">
+        <a href="#">
+          <img src="rsz_1syllycal_small.png" alt="syllyCal Logo" class="nav-logo">
+        </a>
+      </li>
+      <li class="item button"><a href="#subText">About</a></li>
+      <li class="item button secondary">
+        <a href="">Share</a>
+      </li>
+      <li class="toggle"><span class="bars"></span></li>
+    </ul>
+  </nav>
+
+  <section class="content">
+    <!-- TEST  -->
+
+    <p style="font-size:55px; font-weight:bold; font-family:poppins; margin: 0px;">
+
+      <span style="color: #a1d0d8">Organization</span>
+      made easy!
+      <br>
+      <span style="font-size: 25px; font-weight: normal;">
+        Convert your syllabus into a calendar! <br> </span>
+    </p>
+    <img class="imgGirl" src="middle2.png" alt="..." height="" width="" />
+
+    <!-- Drag-and-drop area -->
+    <div class="upload-wrapper">
+      <div id="drop-area">
+        <p>Drag & Drop your syllabus PDF here</p>
+        <input type="file" id="fileElem" accept="application/pdf" style="display:none">
+      </div>
+
+      <!-- Display file name or upload status -->
+      <div id="file-info" style="display:none;">
+        <p id="file-name"></p>
+        <p id="file-status">File ready for upload!</p>
+      </div>
+
+      <button id="uploadButton" disabled>Upload and Process</button>
+
+      <div id="loading-spinner" style="display:none;">
+        <div class="spinner"></div>
+      </div>
+
+      <button id="download-btn">Download CSV</button>
+      <div id="result"></div>
+    </div>
+
+    <!--Script for Drag and Drop-->
+    <script>
+      const dropArea = document.getElementById('drop-area');
+      const uploadButton = document.getElementById('uploadButton');
+      let file;
+
+      dropArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+      });
+
+      dropArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        file = event.dataTransfer.files[0];
+        if (file.type === 'application/pdf') {
+          uploadButton.disabled = false;
+        }
+      });
+
+
+    </script>
+    <!-- <p>test</p> -->
+    <!-- <div class="url-box">
+    <input type="text" id="url-input" placeholder="Have your url ready and click take me!">
+    <button class="urlButt" onclick="window.location.href = 'index3.html'">Take me</button>
+    </div>
+    <div id="result"></div> -->
+
+  </section>
+
+  <main id="page-1" style="text-align: center;">
+    <div id="section2">
+      <h1 style="text-align: center; font-size:55px; font-family: Poppins;">
+        syllyCal <span style="color: #a1d0d8">simplifies the start of the semester</span><br> for students.
+      </h1>
+
+      <h2 class="subText">
+        SyllyCal is an AI-powered tool that <span style="color: #a1d0d8">turns your PDF syllabus <br> into a
+          ready-to-use Google Calendar file,</span> saving you tons of
+        time and hassle! <br />
+      </h2>
+      <br />
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+  </main>
+</body>
+<br><br>
+<section class="content2">
+</section>
+<br>
+<br>
+<br>
+<section id="foot">
+  <footer>
+    <div class="footer">
+      <div class="row">
+        <a href="#"><i class="fa fa-facebook"></i></a>
+        <a href="#"><i class="fa fa-instagram"></i></a>
+        <a href="#"><i class="fa fa-youtube"></i></a>
+        <a href="#"><i class="fa fa-twitter"></i></a>
+      </div>
+      <div class="row">
+        <ul>
+          <li><a href="#">Contact us</a></li>
+          <li><a href="#">Our Services</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+          <li><a href="#">Career</a></li>
+        </ul>
+      </div>
+      <div class="row">
+        syllyCal Copyright © 2024 - All rights reserved || Designed By: team-ZubiDubi
+      </div>
+    </div>
+  </footer>
+</section>
+
+</html>
