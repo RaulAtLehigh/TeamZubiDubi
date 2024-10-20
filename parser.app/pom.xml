@@ -63,6 +63,13 @@
     <artifactId>logback-classic</artifactId>
     <version>1.2.3</version>
 </dependency>
+
+<!--Added dependencies-->
+<dependency>
+  <groupId>org.apache.pdfbox</groupId>
+  <artifactId>pdfbox</artifactId>
+  <version>3.0.2</version>
+</dependency>
   </dependencies>
 
   <build>
